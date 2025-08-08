@@ -165,7 +165,6 @@ onUnmounted(() => {
   text-align: center;
   white-space: pre-wrap;
   overflow: hidden;
-  font-family: monospace, monospace;
   font-size: 14px;
   width: 100%;
   min-height: 18px;
