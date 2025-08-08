@@ -6,6 +6,7 @@ import ThemeSwitcher from "./components/ThemeSwitcher.vue";
 import ClockWeather from "./components/ClockWeather.vue";
 import Hitokoto from "./components/Hitokoto.vue";
 import Links from "./components/Links.vue";
+import Footer from "./components/Footer.vue";
 </script>
 
 <template>
@@ -20,6 +21,7 @@ import Links from "./components/Links.vue";
     <Links />
     <Hitokoto />
   </div>
+  <Footer/>
 </template>
 
 <style scoped>

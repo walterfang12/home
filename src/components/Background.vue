@@ -89,7 +89,7 @@ onMounted(async () => {
     currentIdx.value = -1;
     updateBackground();
   });
-
+  setTimeout(updateBackground, 10);
   // 定时切换
   setInterval(updateBackground, 20000);
 });
