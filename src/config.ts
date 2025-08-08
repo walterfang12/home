@@ -10,7 +10,7 @@ export const config:Config = {
             icon: "fa7-solid:blog"
         },
         {
-            name: "友链",
+            name: "Friends",
             url: "https://blog.yaria.top/links",
             icon: "fa7-solid:link"
         },
