@@ -1,6 +1,61 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
 import { Icon } from "@iconify/vue";
 import { config } from "../config";
+
+const fullText = ref(config.description);
+const displayedText = ref("");
+const cursorVisible = ref(true);
+
+let typingTimer: number | null = null;
+let blinkingTimer: number | null = null;
+
+const typingSpeed = 150; // 打字间隔ms
+const deletingSpeed = 100; // 删除间隔ms
+const pauseTime = 1200; // 停顿时间ms
+
+function startTypingAnimation() {
+  let index = 0;
+  let deleting = false;
+
+  typingTimer = window.setInterval(() => {
+    if (!deleting) {
+      // 打字
+      displayedText.value = fullText.value.slice(0, index + 1);
+      index++;
+      if (index === fullText.value.length) {
+        clearInterval(typingTimer!);
+        setTimeout(() => {
+          deleting = true;
+          typingTimer = window.setInterval(() => {
+            // 删除
+            displayedText.value = fullText.value.slice(0, index - 1);
+            index--;
+            if (index === 0) {
+              clearInterval(typingTimer!);
+              setTimeout(() => {
+                deleting = false;
+                startTypingAnimation();
+              }, pauseTime);
+            }
+          }, deletingSpeed);
+        }, pauseTime);
+      }
+    }
+  }, typingSpeed);
+}
+
+onMounted(() => {
+  startTypingAnimation();
+  blinkingTimer = window.setInterval(() => {
+    cursorVisible.value = !cursorVisible.value;
+  }, 500);
+});
+
+onUnmounted(() => {
+  if (typingTimer) clearInterval(typingTimer);
+  if (blinkingTimer) clearInterval(blinkingTimer);
+});
 </script>
 
 <template>
@@ -8,7 +63,9 @@ import { config } from "../config";
     <div class="personal-front">
       <img class="avatar" :src="config.avatar" alt="Avatar" />
       <span class="author">{{ config.author }}</span>
-      <span class="description">{{ config.description }}</span>
+      <span class="description">
+        {{ displayedText }}<span class="cursor" v-show="cursorVisible">|</span>
+      </span>
     </div>
     <div class="personal-back">
       <span class="back-description">{{ config.backDescription }}</span>
@@ -46,6 +103,7 @@ import { config } from "../config";
   transition: 1s transform, 0.3s color, 0.3s background-color;
   transform-style: preserve-3d;
   position: relative;
+  perspective: 1000px;
 }
 
 @media screen and (max-width: 500px) {
@@ -59,12 +117,12 @@ import { config } from "../config";
     height: 150px;
   }
   .avatar {
-    margin-right: 0!important;
+    margin-right: 0 !important;
   }
 }
 @media screen and (max-width: 250px) {
-  .author{
-    font-size:24px!important;
+  .author {
+    font-size: 24px !important;
     width: 100%;
     text-align: center;
   }
@@ -86,6 +144,11 @@ import { config } from "../config";
   top: 0;
   align-items: center;
   justify-content: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.personal-front {
+  transform: rotateY(0deg);
 }
 .personal-back {
   transform: rotateY(180deg);
@@ -100,16 +163,31 @@ import { config } from "../config";
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  white-space: pre-wrap;
+  overflow: hidden;
+  font-family: monospace, monospace;
+  font-size: 14px;
+  width: 100%;
+  min-height: 18px;
 }
-.avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-right: 16px;
-  border: 2px solid #fffa;
-  transition: 0.3s;
+.cursor {
+  display: inline-block;
+  width: 8px;
+  color: var(--font-color);
+  animation: blink .5s steps(2, start) infinite;
+  transform: translateX(-3px);
 }
-.back-description {
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+.personal-back .back-description {
   margin: auto;
   width: 100%;
   text-align: center;
@@ -133,5 +211,13 @@ import { config } from "../config";
 .social-link:hover {
   color: var(--font-color-hover);
   fill: var(--font-color-hover);
+}
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 16px;
+  border: 2px solid #fffa;
+  transition: 0.3s;
 }
 </style>

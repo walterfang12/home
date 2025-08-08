@@ -10,10 +10,12 @@ import type {
   LocationRep,
 } from "../interfaces/weather";
 import { Zhixiashi, Unloaded, wiMapping } from "../interfaces/weather";
+
 const city = ref<City | Unloaded>(Unloaded.Loading);
 const weatherNow = ref<Weather | Unloaded>(Unloaded.Loading);
 const time = ref<string>("07:21");
 const date = ref<string>("1919-08-10");
+const loading = ref(false);
 
 function updateTimeDate() {
   const now = new Date();
@@ -28,59 +30,57 @@ function updateTimeDate() {
   date.value = `${y}-${m}-${d}`;
 }
 
-onMounted(async () => {
-  updateTimeDate();
-  const timer = setInterval(updateTimeDate, 1000);
-  onUnmounted(() => clearInterval(timer));
-  const locationRep = await fetch("https://my.ip.cn/json/");
+async function refreshWeather() {
+  if (loading.value) return;
+  loading.value = true;
+
   city.value = Unloaded.Loading;
   weatherNow.value = Unloaded.Loading;
-  let location: LocationRep;
-  if (locationRep.ok && locationRep.status === 200) {
-    location = await locationRep.json();
-    if (!location.status) {
-      city.value = Unloaded.Error;
-      weatherNow.value = Unloaded.Error;
-      return;
+
+  try {
+    const locationRep = await fetch("https://my.ip.cn/json/");
+    if (!locationRep.ok) throw new Error("位置请求失败");
+    const location: LocationRep = await locationRep.json();
+    if (!location.status) throw new Error("位置数据状态错误");
+    city.value = location.data;  // 先赋值城市
+
+    const cityCodeRep = await fetch(
+      `https://${config.HF_Host}/geo/v2/city/lookup/?location=${location.data.district}&adm=${location.data.city}&key=${config.HF_Key}`
+    );
+    if (!cityCodeRep.ok) throw new Error("城市代码请求失败");
+    const cityCodeJson: CityCodeRep = await cityCodeRep.json();
+    if (cityCodeJson.code !== "200") throw new Error("城市代码状态错误");
+    const cityCode = cityCodeJson.location[0]?.id;
+    if (!cityCode) throw new Error("未找到城市代码");
+
+    const weatherRep = await fetch(
+      `https://${config.HF_Host}/v7/weather/now?location=${cityCode}&key=${config.HF_Key}`
+    );
+    if (!weatherRep.ok) throw new Error("天气请求失败");
+    const weather: WeatherRep = await weatherRep.json();
+    if (weather.code !== "200") throw new Error("天气状态错误");
+
+    weatherNow.value = weather.now;  // 天气赋值成功
+  } catch (e) {
+    // 城市已经赋值成功则不改city
+    if (city.value === Unloaded.Loading) {
+      city.value = Unloaded.Error;  // 只有城市都没成功时才报错
     }
-    city.value = location.data;
-  } else {
-    city.value = Unloaded.Error;
-    weatherNow.value = Unloaded.Error;
-    return;
+    weatherNow.value = Unloaded.Error;  // 天气失败只改天气状态
+    console.error(e);
+  } finally {
+    loading.value = false;
   }
-  const cityCodeRep = await fetch(
-    `https://${config.HF_Host}/geo/v2/city/lookup/?location=${location.data.district}&adm=${location.data.city}&key=${config.HF_Key}`
-  );
-  let cityCodeJson: CityCodeRep, cityCode: string;
-  if (cityCodeRep.ok && cityCodeRep.status === 200) {
-    cityCodeJson = await cityCodeRep.json();
-    if (cityCodeJson.code !== "200") {
-      weatherNow.value = Unloaded.Error;
-      return;
-    }
-    cityCode = cityCodeJson.location[0]?.id;
-  } else {
-    weatherNow.value = Unloaded.Error;
-    return;
-  }
-  const weatherRep = await fetch(
-    `https://${config.HF_Host}/v7/weather/now?location=${cityCode}&key=${config.HF_Key}`
-  );
-  let weather: WeatherRep;
-  if (weatherRep.ok && weatherRep.status === 200) {
-    weather = await weatherRep.json();
-    if (weather.code !== "200") {
-      weatherNow.value = Unloaded.Error;
-      return;
-    }
-    weatherNow.value = weather.now;
-  } else {
-    weatherNow.value = Unloaded.Error;
-    return;
-  }
+}
+
+onMounted(() => {
+  updateTimeDate();
+  const timer = setInterval(updateTimeDate, 1000);
+  refreshWeather();
+  onUnmounted(() => clearInterval(timer));
 });
 </script>
+
 <template>
   <div class="clock-weather card">
     <div class="clock">
@@ -107,23 +107,15 @@ onMounted(async () => {
           v-if="city !== Unloaded.Loading && city !== Unloaded.Error"
           class="city"
         >
-          <span v-if="city.country !== '中国'">
-            {{ city.country + " " }}
-          </span>
-          <span v-if="Zhixiashi.indexOf(city.province) == -1">
-            {{ city.province + " " }}
-          </span>
-          <span>
-            {{ city.city + " " }}
-          </span>
-          <span>
-            {{ city.district }}
-          </span>
+          <span v-if="city.country !== '中国'">{{ city.country + " " }}</span>
+          <span v-if="Zhixiashi.indexOf(city.province) == -1">{{
+            city.province + " "
+          }}</span>
+          <span>{{ city.city + " " }}</span>
+          <span>{{ city.district }}</span>
         </div>
-        <div v-else-if="city === Unloaded.Loading" class="city">
-          城市获取中...
-        </div>
-        <div v-else class="city">城市获取失败</div>
+        <div v-else-if="city === Unloaded.Loading" class="city">获取中...</div>
+        <div v-else class="city">获取失败</div>
         <div
           v-if="
             weatherNow !== Unloaded.Loading && weatherNow !== Unloaded.Error
@@ -132,17 +124,47 @@ onMounted(async () => {
         >
           {{ weatherNow.text + " " + weatherNow?.temp }}°C
         </div>
-        <div v-else class="temperature">
-          {{
-            weatherNow === Unloaded.Error ? "获取失败 --°C" : "获取中... --°C"
-          }}
-        </div>
+        <div v-else class="temperature">--°C</div>
       </div>
+      <!-- 刷新按钮 -->
+      <button
+        class="refresh-btn"
+        @click="refreshWeather"
+        :disabled="loading"
+        :title="loading ? '刷新中...' : '刷新天气'"
+        aria-label="刷新天气"
+      >
+        <Icon icon="mdi:refresh" width="20" height="20" />
+      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
+.refresh-btn {
+  background: transparent;
+  border: none;
+  color: var(--font-color);
+  transition: 0.3s;
+  height: 24px;
+  cursor: pointer;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  color: var(--font-color-hover);
+  outline: none;
+}
+
+.refresh-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* 你已有的样式保持不变 */
 .clock-weather {
   height: 120px;
   width: 150px;
@@ -192,6 +214,7 @@ onMounted(async () => {
 .weather {
   display: flex;
   justify-content: center;
+  align-items: center;
   align-items: center;
 }
 .time {

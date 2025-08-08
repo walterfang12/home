@@ -61,6 +61,12 @@ body {
 }
 #cursor {
     position: fixed;
+    left: -8px;
+    top: -8px;
+}
+
+#cursor-inner {
+  
     width: 16px;
     height: 16px;
     background: #000;
@@ -69,23 +75,20 @@ body {
     z-index: 10086;
     pointer-events: none;
     transition: 0.2s ease-in-out;
-    transition-property: background, opacity, transform;
-    transform: translate(-50%, -50%);
 }
 
-#cursor.hidden {
+#cursor-inner.hidden {
     opacity: 0;
-    transform: translate(-50%, -50%);
 }
 
-#cursor.hover {
+#cursor-inner.hover {
     opacity: 0.1;
-    transform: translate(-50%, -50%) scale(2.5);
+    scale: 2.5;
 }
 
-#cursor.active {
+#cursor-inner.active {
     opacity: 0.5;
-    transform: translate(-50%, -50%) scale(0.5);
+    scale: 0.5;
 }
 * {
     cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8px' height='8px'><style>circle {fill: white;}</style><circle cx='4' cy='4' r='4' opacity='.5'/></svg>") 4 4, auto!important;

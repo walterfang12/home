@@ -35,5 +35,9 @@
 .footer__line > a {
   color: var(--text-color);
   text-decoration: underline;
+  transition: .3s;
+}
+.footer__line > a:hover {
+  color: var(--font-color-hover);
 }
 </style>
