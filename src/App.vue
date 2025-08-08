@@ -30,5 +30,6 @@ import Links from './components/Links.vue';
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    max-width:470px;
 }
 </style>
