@@ -1,0 +1,50 @@
+@import url("./blueaka.css");
+
+[theme="dark"] {
+  --font-color: #ffffff99;
+  --font-color-hover: #d5d5d599;
+  --font-color-inv: #525252c9;
+  --background-color: rgba(255, 255, 255, 0.1);
+  --background-color-hover: rgba(188, 188, 188, 0.336);
+  --card-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+[theme="light"] {
+  --font-color: #525252c9;
+  --font-color-hover: #6e6e6ec9;
+  --font-color-inv: #ffffff99;
+  --background-color: rgba(0, 0, 0, 0.075);
+  --card-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  --background-color-hover: rgba(188, 188, 188, 0.336);
+}
+[theme="dark"] body{
+  background-color: black;
+}
+[theme="light"] body{
+  background-color: white;
+}
+body {
+  font-family: "Blueaka", sans-serif;
+  padding: 0;
+  margin: 0;
+  transition: .3s;
+}
+#app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  color: var(--font-color);
+}
+.card {
+  background: transparent;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: var(--background-color);
+  box-shadow: var(--card-shadow);
+}
+[theme="dark"] ::selection{
+  background-color:#618c9baa;
+}
+[theme="light"] ::selection{
+  background-color:#9bc7d7aa;
+}
