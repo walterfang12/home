@@ -7,6 +7,12 @@ import ClockWeather from "./components/ClockWeather.vue";
 import Hitokoto from "./components/Hitokoto.vue";
 import Links from "./components/Links.vue";
 import Footer from "./components/Footer.vue";
+import { onMounted } from "vue";
+//@ts-ignore
+import Cursor from "./thirdparty/cursor.js";
+onMounted(() => {
+  new Cursor();
+})
 </script>
 
 <template>
