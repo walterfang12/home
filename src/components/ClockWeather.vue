@@ -9,7 +9,7 @@ import type {
   WeatherRep,
   LocationRep,
 } from "../interfaces/weather";
-import { Zhixiashi, Unloaded,wiMapping } from "../interfaces/weather";
+import { Zhixiashi, Unloaded, wiMapping } from "../interfaces/weather";
 const city = ref<City | Unloaded>(Unloaded.Loading);
 const weatherNow = ref<Weather | Unloaded>(Unloaded.Loading);
 const time = ref<string>("07:21");
@@ -148,6 +148,35 @@ onMounted(async () => {
   width: 150px;
   display: flex;
   flex-direction: column;
+  transition: 0.3s;
+}
+
+@media screen and (max-width: 500px) {
+  .clock-weather {
+    width: calc(100vw - 70px);
+    height: 80px;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .weather {
+    margin: auto;
+    margin-left: 10px;
+  }
+  .clock {
+    margin-right: 10px !important;
+    transform: translateY(5px);
+  }
+}
+@media screen and (max-width: 300px) {
+  .clock-weather {
+    height: 120px;
+  }
+  .weather {
+    margin: auto !important;
+  }
+  .clock {
+    margin: auto !important;
+  }
 }
 .temperature {
   font-family: sans-serif;

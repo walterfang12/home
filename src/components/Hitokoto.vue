@@ -32,6 +32,12 @@ fetch('https://v1.hitokoto.cn')
     width: 470px;
     box-sizing: border-box;
     padding:8px 20px;
+    transition: .3s;
+}
+@media screen and (max-width: 500px) {
+    .hitokoto{
+        width: calc(100vw - 40px);
+    }
 }
 .hitokoto-text{
     text-align: center;

@@ -43,9 +43,31 @@ import { config } from "../config";
 .personal {
   width: 250px;
   height: 120px;
-  transition: 1s;
+  transition: 1s transform, 0.3s color, 0.3s background-color;
   transform-style: preserve-3d;
   position: relative;
+}
+
+@media screen and (max-width: 500px) {
+  .personal {
+    width: calc(100vw - 70px);
+    height: 100px;
+  }
+}
+@media screen and (max-width: 312px) {
+  .personal {
+    height: 150px;
+  }
+  .avatar {
+    margin-right: 0!important;
+  }
+}
+@media screen and (max-width: 250px) {
+  .author{
+    font-size:24px!important;
+    width: 100%;
+    text-align: center;
+  }
 }
 .personal:hover {
   transform: rotateY(180deg);
@@ -77,6 +99,7 @@ import { config } from "../config";
   line-height: 18px;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
 }
 .avatar {
   width: 60px;
@@ -88,6 +111,8 @@ import { config } from "../config";
 }
 .back-description {
   margin: auto;
+  width: 100%;
+  text-align: center;
 }
 .socials {
   margin: auto;

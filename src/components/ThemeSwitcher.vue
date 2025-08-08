@@ -76,6 +76,13 @@ function switchBackground() {
 .switchBackground {
   top: 80px;
   right: 20px;
+  transition: .3s;
+}
+@media screen and (max-width: 500px) {
+  .switchBackground {
+    top:20px;
+    right:80px;
+  }
 }
 .theme-switcher:hover {
   background-color: var(--background-color-hover);
