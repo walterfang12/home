@@ -52,7 +52,7 @@ fetchHitokoto();
 
 <style scoped>
 .hitokoto {
-  width: 470px;
+  width: 475px;
   box-sizing: border-box;
   padding: 8px 20px;
   transition: 0.3s;

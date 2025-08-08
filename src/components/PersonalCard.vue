@@ -112,19 +112,21 @@ onUnmounted(() => {
     height: 100px;
   }
 }
-@media screen and (max-width: 312px) {
+@media screen and (max-width: 320px) {
   .personal {
     height: 150px;
   }
   .avatar {
     margin-right: 0 !important;
   }
+  .author {
+    width: 100%;
+    text-align: center;
+  }
 }
 @media screen and (max-width: 250px) {
   .author {
     font-size: 24px !important;
-    width: 100%;
-    text-align: center;
   }
 }
 .personal:hover {

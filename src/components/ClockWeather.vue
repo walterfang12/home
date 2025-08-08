@@ -189,7 +189,7 @@ onMounted(() => {
     transform: translateY(5px);
   }
 }
-@media screen and (max-width: 300px) {
+@media screen and (max-width: 325px) {
   .clock-weather {
     height: 120px;
   }

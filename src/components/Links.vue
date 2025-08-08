@@ -31,10 +31,10 @@ import { config } from "../config";
 </template>
 <style scoped>
 .link-container {
-  width: 470px;
+  width: 475px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
   flex-wrap: wrap;
 }
 @media screen and (max-width: 500px) {

@@ -39,7 +39,7 @@ body {
   background: transparent;
   border: none;
   padding: 15px;
-  border-radius: 10px;
+  border-radius: 15px;
   background-color: var(--background-color);
   box-shadow: var(--card-shadow);
 }

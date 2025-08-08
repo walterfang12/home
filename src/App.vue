@@ -34,11 +34,11 @@ onMounted(() => {
 .cards-container {
   display: flex;
   margin: auto;
-  gap: 10px;
+  gap: 15px;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  max-width: 470px;
+  max-width: 475px;
   padding: 20px 0;
 }
 </style>
