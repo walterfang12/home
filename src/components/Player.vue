@@ -684,7 +684,7 @@ window.addEventListener("resize", updateMarqueeStatus);
   color: white;
 }
 [theme="light"] .track.active,
-.track:hover {
+[theme="light"] .track:hover {
   color: #0009;
 }
 

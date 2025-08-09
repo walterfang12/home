@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { config } from "./config.ts";
 import PersonalCard from "./components/PersonalCard.vue";
-import Background from "./components/Background.vue";
 import ThemeSwitcher from "./components/ThemeSwitcher.vue";
 import ClockWeather from "./components/ClockWeather.vue";
 import Hitokoto from "./components/Hitokoto.vue";
