@@ -10,30 +10,64 @@ const cursorVisible = ref(true);
 let typingTimer: number | null = null;
 let blinkingTimer: number | null = null;
 
-const typingSpeed = 150; // 打字间隔ms
+const typingSpeed = 200; // 打字间隔ms
 const deletingSpeed = 100; // 删除间隔ms
-const pauseTime = 1200; // 停顿时间ms
+const pauseTime = 1800; // 停顿时间ms
 
 function startTypingAnimation() {
   let index = 0;
   let deleting = false;
 
+  // 停止任何闪烁，光标常亮
+  if (blinkingTimer) {
+    clearInterval(blinkingTimer);
+    blinkingTimer = null;
+  }
+  cursorVisible.value = true;
+
   typingTimer = window.setInterval(() => {
     if (!deleting) {
-      // 打字
+      // 打字阶段
       displayedText.value = fullText.value.slice(0, index + 1);
       index++;
       if (index === fullText.value.length) {
         clearInterval(typingTimer!);
+        typingTimer = null;
+
+        // 停顿阶段，开启闪烁
+        blinkingTimer = window.setInterval(() => {
+          cursorVisible.value = !cursorVisible.value;
+        }, 500);
+
         setTimeout(() => {
+          // 停顿结束，关闭闪烁，光标常亮，开始删除
+          if (blinkingTimer) {
+            clearInterval(blinkingTimer);
+            blinkingTimer = null;
+          }
+          cursorVisible.value = true;
           deleting = true;
+
           typingTimer = window.setInterval(() => {
-            // 删除
+            // 删除阶段
             displayedText.value = fullText.value.slice(0, index - 1);
             index--;
             if (index === 0) {
               clearInterval(typingTimer!);
+              typingTimer = null;
+
+              // 停顿阶段，开启闪烁
+              blinkingTimer = window.setInterval(() => {
+                cursorVisible.value = !cursorVisible.value;
+              }, 500);
+
               setTimeout(() => {
+                // 停顿结束，关闭闪烁，光标常亮，重新开始打字
+                if (blinkingTimer) {
+                  clearInterval(blinkingTimer);
+                  blinkingTimer = null;
+                }
+                cursorVisible.value = true;
                 deleting = false;
                 startTypingAnimation();
               }, pauseTime);
@@ -47,9 +81,6 @@ function startTypingAnimation() {
 
 onMounted(() => {
   startTypingAnimation();
-  blinkingTimer = window.setInterval(() => {
-    cursorVisible.value = !cursorVisible.value;
-  }, 500);
 });
 
 onUnmounted(() => {
@@ -130,9 +161,7 @@ onUnmounted(() => {
     font-size: 24px !important;
   }
 }
-/* .personal{
-  perspective: 1000px;
-} */
+
 .personal:hover .personal-content {
   transform: rotateY(180deg);
 }

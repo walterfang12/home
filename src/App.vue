@@ -8,6 +8,7 @@ import Hitokoto from "./components/Hitokoto.vue";
 import Links from "./components/Links.vue";
 import Footer from "./components/Footer.vue";
 import { onMounted } from "vue";
+import Player from "./components/Player.vue";
 //@ts-ignore
 import Cursor from "./thirdparty/cursor.js";
 onMounted(() => {
@@ -19,8 +20,8 @@ onMounted(() => {
   <title>
     {{ config.title }}
   </title>
-  <Background />
   <ThemeSwitcher />
+  <Player/>
   <div class="cards-container">
     <PersonalCard />
     <ClockWeather />

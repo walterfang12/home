@@ -43,7 +43,7 @@ function switchBackground() {
     />
   </button>
   <button class="theme-switcher switchBackground" @click="switchBackground">
-    <Icon icon="gg:image" width="24" height="24" />
+    <Icon icon="ri:image-line" width="24" height="24" />
   </button>
 </template>
 
@@ -74,14 +74,14 @@ function switchBackground() {
   right: 20px;
 }
 .switchBackground {
-  top: 80px;
-  right: 20px;
-  transition: .3s;
+  top: 20px;
+  right: 80px;
+  transition: 0.3s;
 }
 @media screen and (max-width: 500px) {
-  .switchBackground {
-    top:20px;
-    right:80px;
+  .theme-switcher {
+    width: 30px;
+    height: 30px;
   }
 }
 .theme-switcher:hover {

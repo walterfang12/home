@@ -79,6 +79,7 @@ export const config:Config = {
     ],
     HF_Host: "mb6vh9n9f9.re.qweatherapi.com",
     HF_Key: "2434be2249584e11a31c971bd0b4d66f",
+    playlistIdWyy: "7761179667"
 }
 export interface Link {
     name: string;
@@ -99,4 +100,5 @@ export interface Config {
     darkBackgrounds: string[];
     HF_Host: string;
     HF_Key: string;
+    playlistIdWyy: string;
 }
