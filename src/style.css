@@ -3,7 +3,6 @@
 [theme="dark"] {
   --font-color: #ffffff99;
   --font-color-hover: #d5d5d599;
-  --font-color-inv: #525252c9;
   --background-color: rgba(255, 255, 255, 0.1);
   --background-color-hover: rgba(188, 188, 188, 0.336);
   --card-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -12,7 +11,6 @@
 [theme="light"] {
   --font-color: #525252c9;
   --font-color-hover: #6e6e6ec9;
-  --font-color-inv: #ffffff99;
   --background-color: rgba(0, 0, 0, 0.075);
   --card-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   --background-color-hover: rgba(188, 188, 188, 0.336);
