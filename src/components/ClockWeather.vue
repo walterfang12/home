@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { config } from "../config";
 import { Icon } from "@iconify/vue";
 import type {
@@ -16,6 +16,7 @@ const weatherNow = ref<Weather | Unloaded>(Unloaded.Loading);
 const time = ref<string>("07:21");
 const date = ref<string>("1919-08-10");
 const loading = ref(false);
+const hover = ref(false);
 
 function updateTimeDate() {
   const now = new Date();
@@ -45,23 +46,19 @@ async function refreshWeather() {
     if (!location.status) throw new Error("位置数据状态错误");
     city.value = location.data; // 先赋值城市
     let cityCodeRep: Response;
-    console.log(location);
-    if(location.data.district){
+    if (location.data.district) {
       cityCodeRep = await fetch(
         `https://${config.HF_Host}/geo/v2/city/lookup/?location=${location.data.district}&adm=${location.data.city}&lang=zh&key=${config.HF_Key}`
       );
-    }
-    else if(location.data.province){
+    } else if (location.data.province) {
       cityCodeRep = await fetch(
         `https://${config.HF_Host}/geo/v2/city/lookup/?location=${location.data.province}&lang=zh&key=${config.HF_Key}`
       );
-    }
-    else if(location.data.city){
+    } else if (location.data.city) {
       cityCodeRep = await fetch(
         `https://${config.HF_Host}/geo/v2/city/lookup/?location=${location.data.city}&lang=zh&key=${config.HF_Key}`
       );
-    }
-    else{
+    } else {
       cityCodeRep = await fetch(
         `https://${config.HF_Host}/geo/v2/city/lookup/?location=${location.data.country}&lang=zh&key=${config.HF_Key}`
       );
@@ -80,11 +77,10 @@ async function refreshWeather() {
 
     weatherNow.value = weather.now; // 天气赋值成功
   } catch (e) {
-    // 城市已经赋值成功则不改city
     if (city.value === Unloaded.Loading) {
-      city.value = Unloaded.Error; // 只有城市都没成功时才报错
+      city.value = Unloaded.Error;
     }
-    weatherNow.value = Unloaded.Error; // 天气失败只改天气状态
+    weatherNow.value = Unloaded.Error;
     console.error(e);
   } finally {
     loading.value = false;
@@ -100,155 +96,166 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="clock-weather card">
-    <div class="clock">
-      <div class="time">{{ time }}</div>
-      <div class="date">{{ date }}</div>
-    </div>
-    <div class="weather">
-      <Icon
-        v-if="weatherNow === Unloaded.Loading || weatherNow === Unloaded.Error"
-        icon="wi:na"
-        class="weather-icon"
-        width="30px"
-        height="30px"
-      />
-      <Icon
-        v-else
-        :icon="wiMapping[weatherNow?.icon]"
-        class="weather-icon"
-        width="30px"
-        height="30px"
-      />
-      <div class="weather-text">
-        <div
-          v-if="city !== Unloaded.Loading && city !== Unloaded.Error"
-          class="city"
-        >
-          <span v-if="city.country !== '中国'">{{ city.country + " " }}</span>
-          <span
-            v-if="city.province && Zhixiashi.indexOf(city.province) == -1"
-            >{{ city.province + " " }}</span
+  <div
+    class="flip-container"
+    @mouseenter="hover = true"
+    @mouseleave="hover = false"
+    :class="{ flipped: hover }"
+  >
+    <div class="clock-weather card">
+      <div class="front">
+        <div class="clock">
+          <div class="time">{{ time }}</div>
+          <div class="date">{{ date }}</div>
+        </div>
+        <div class="weather">
+          <Icon
+            v-if="weatherNow === Unloaded.Loading || weatherNow === Unloaded.Error"
+            icon="wi:na"
+            class="weather-icon"
+            width="30px"
+            height="30px"
+          />
+          <Icon
+            v-else
+            :icon="wiMapping[weatherNow?.icon]"
+            class="weather-icon"
+            width="30px"
+            height="30px"
+          />
+          <div class="weather-text">
+            <div
+              v-if="city !== Unloaded.Loading && city !== Unloaded.Error"
+              class="city"
+            >
+              <span v-if="city.country !== '中国'">{{ city.country + " " }}</span>
+              <span
+                v-if="city.province && Zhixiashi.indexOf(city.province) == -1"
+              >
+                {{ city.province + " " }}
+              </span>
+              <span v-if="city.city">{{ city.city + " " }}</span>
+              <span v-if="city.district">{{ city.district }}</span>
+            </div>
+            <div v-else-if="city === Unloaded.Loading" class="city">获取中...</div>
+            <div v-else class="city">获取失败</div>
+
+            <div
+              v-if="
+                weatherNow !== Unloaded.Loading && weatherNow !== Unloaded.Error
+              "
+              class="temperature"
+              :title="`${weatherNow.text} ${weatherNow?.temp}°C`"
+            >
+              {{ weatherNow.text + " " + weatherNow?.temp }}°C
+            </div>
+            <div v-else class="temperature">--°C</div>
+          </div>
+          <button
+            class="refresh-btn"
+            @click="refreshWeather"
+            :disabled="loading"
+            :title="loading ? '刷新中...' : '刷新天气'"
           >
-          <span v-if="city.city">{{ city.city + " " }}</span>
-          <span v-if="city.district">{{ city.district }}</span>
+            <Icon icon="mdi:refresh" width="20" height="20" />
+          </button>
         </div>
-        <div v-else-if="city === Unloaded.Loading" class="city">获取中...</div>
-        <div v-else class="city">获取失败</div>
-        <div
-          v-if="
-            weatherNow !== Unloaded.Loading && weatherNow !== Unloaded.Error
-          "
-          class="temperature"
-          :title="`${weatherNow.text} ${weatherNow?.temp}°C`"
-        >
-          {{ weatherNow.text + " " + weatherNow?.temp }}°C
-        </div>
-        <div v-else class="temperature">--°C</div>
       </div>
-      <!-- 刷新按钮 -->
-      <button
-        class="refresh-btn"
-        @click="refreshWeather"
-        :disabled="loading"
-        :title="loading ? '刷新中...' : '刷新天气'"
-        aria-label="刷新天气"
-      >
-        <Icon icon="mdi:refresh" width="20" height="20" />
-      </button>
+
+      <div class="back">
+        <slot name="back">
+          <div style="text-align:center;">这里是背面内容</div>
+        </slot>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.refresh-btn {
-  background: transparent;
-  border: none;
-  color: var(--font-color);
-  transition: 0.3s;
-  height: 24px;
-  cursor: pointer;
-  margin-left: 8px;
+.flip-container {
+  width: 180px;
+  height: 150px;
+  perspective: 1000px;
+  position: relative;
+}
+
+.clock-weather.card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  transition: transform 1s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.flip-container.flipped .clock-weather.card {
+  transform: rotateY(180deg);
+}
+
+.front,
+.back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
   display: flex;
+  flex-wrap: wrap;
+  left:0;
+  top:0;
+  box-sizing: border-box;
   align-items: center;
-  padding: 0;
+  justify-content: center;
+  padding: 15px;
 }
 
-.refresh-btn:hover:not(:disabled) {
-  color: var(--font-color-hover);
-  outline: none;
+.front {
+  transform: rotateY(0deg);
+  text-align: center;
 }
 
-.refresh-btn:disabled {
-  cursor: default;
-  opacity: 0.5;
+.back {
+  transform: rotateY(180deg);
 }
 
-/* 你已有的样式保持不变 */
-.clock-weather {
-  height: 120px;
-  width: 150px;
+/* 你已有的样式保留 */
+.weather {
   display: flex;
-  flex-direction: column;
-  transition: 0.3s;
+  justify-content: center;
+  align-items: center;
 }
-
-@media screen and (max-width: 500px) {
-  .clock-weather {
-    width: calc(100vw - 70px);
-    height: 80px;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .weather {
-    margin: auto;
-    margin-left: 10px;
-  }
-  .clock {
-    margin-right: 10px !important;
-    transform: translateY(5px);
-  }
+.weather-text{
+  line-height: 26px;
 }
-@media screen and (max-width: 325px) {
-  .clock-weather {
-    height: 120px;
-  }
-  .weather {
-    margin: auto !important;
-  }
-  .clock {
-    margin: auto !important;
-  }
+.time {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 32px;
 }
-.temperature {
-  font-family: sans-serif;
-}
-.temperature,.city {
+.temperature,
+.city {
   max-width: 90px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.clock {
+.refresh-btn {
+  background: transparent;
+  border: none;
+  color: var(--font-color);
+  cursor: pointer;
+  margin-left: 8px;
+  height: 24px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
-  flex-direction: column;
-  margin: auto;
+  padding: 0;
+  transition: 0.3s;
 }
-.weather {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-items: center;
+.refresh-btn:hover:not(:disabled) {
+  color: var(--font-color-hover);
+  outline: none;
 }
-.time {
-  font-size: 30px;
-  line-height: 32px;
-  font-weight: 600;
-}
-.weather-icon {
-  margin-right: 5px;
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 </style>
