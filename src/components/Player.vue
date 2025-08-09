@@ -785,4 +785,7 @@ window.addEventListener("resize", updateMarqueeStatus);
     display: none;
   }
 }
+[theme="dark"] .player-musicselect::-webkit-scrollbar-thumb {
+  background-color: var(--font-color);
+}
 </style>
