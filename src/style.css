@@ -8,6 +8,7 @@
   --background-color-hover: rgba(188, 188, 188, 0.336);
   --card-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 [theme="light"] {
   --font-color: #525252c9;
   --font-color-hover: #6e6e6ec9;
@@ -16,12 +17,15 @@
   --card-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   --background-color-hover: rgba(188, 188, 188, 0.336);
 }
+
 [theme="dark"] body{
   background-color: black;
 }
+
 [theme="light"] body{
   background-color: white;
 }
+
 body {
   font-family: "Blueaka", sans-serif;
   padding: 0;
@@ -30,12 +34,14 @@ body {
   scrollbar-gutter: stable;
   position: relative;
 }
+
 #app {
   display: flex;
   width: 100vw;
   min-height: 100vh;
   color: var(--font-color);
 }
+
 .card {
   background: transparent;
   border: none;
@@ -44,53 +50,69 @@ body {
   background-color: var(--background-color);
   box-shadow: var(--card-shadow);
 }
+
 [theme="dark"] ::selection{
   background-color:#618c9baa;
 }
+
 [theme="light"] ::selection{
   background-color:#9bc7d7aa;
 }
+
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
   background: transparent;
 }
+
 .scrollbar__content{
   display: flex;
   min-height: 100vh;
   width:100vw;
 }
+
 #cursor {
-    position: fixed;
-    left: -8px;
-    top: -8px;
+  position: fixed;
+  left: -8px;
+  top: -8px;
 }
 
 #cursor-inner {
-  
-    width: 16px;
-    height: 16px;
-    background: #000;
-    border-radius: 8px;
-    opacity: 0.25;
-    z-index: 10086;
-    pointer-events: none;
-    transition: 0.2s ease-in-out;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  opacity: 0.2;
+  z-index: 10086;
+  pointer-events: none;
+  transition: 0.2s ease-in-out;
+}
+
+[theme="dark"] #cursor-inner {
+  background: white;
+}
+
+[theme="light"] #cursor-inner {
+  background: black;
 }
 
 #cursor-inner.hidden {
-    opacity: 0;
+  opacity: 0;
 }
 
 #cursor-inner.hover {
-    opacity: 0.1;
-    scale: 2.5;
+  opacity: 0.1;
+  scale: 2.5;
 }
 
 #cursor-inner.active {
-    opacity: 0.5;
-    scale: 0.5;
+  opacity: 0.5;
+  scale: 0.5;
 }
-* {
-    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8px' height='8px'><style>circle {fill: white;}</style><circle cx='4' cy='4' r='4' opacity='.5'/></svg>") 4 4, auto!important;
+
+[theme="dark"] * {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8px' height='8px'><circle cx='4' cy='4' r='4' fill='white' opacity='.85'/></svg>") 4 4, auto !important;
+}
+
+[theme="light"] * {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8px' height='8px'><circle cx='4' cy='4' r='4' fill='black' opacity='.45'/></svg>") 4 4, auto !important;
 }
