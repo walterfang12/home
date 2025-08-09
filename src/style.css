@@ -28,11 +28,12 @@ body {
   margin: 0;
   transition: .3s;
   scrollbar-gutter: stable;
+  position: relative;
 }
 #app {
   display: flex;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   color: var(--font-color);
 }
 .card {

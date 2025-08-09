@@ -46,12 +46,12 @@ export interface LocationRep {
   status: boolean;
 }
 export interface City {
-  city: string;
+  city?: string;
   country: string;
-  district: string;
+  district?: string;
   ip: string;
   isp: string;
-  province: string;
+  province?: string;
 }
 export interface CityCodeRep {
   code: string;
