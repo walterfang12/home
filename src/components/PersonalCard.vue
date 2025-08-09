@@ -130,9 +130,9 @@ onUnmounted(() => {
     font-size: 24px !important;
   }
 }
-.personal{
+/* .personal{
   perspective: 1000px;
-}
+} */
 .personal:hover .personal-content {
   transform: rotateY(180deg);
 }

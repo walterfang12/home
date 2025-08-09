@@ -324,7 +324,7 @@ onMounted(() => {
 .flip-container {
   width: 180px;
   height: 150px;
-  perspective: 1000px;
+  /* perspective: 1000px; */
   position: relative;
 }
 
