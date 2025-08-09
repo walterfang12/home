@@ -59,45 +59,47 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="card personal">
-    <div class="personal-front">
-      <img class="avatar" :src="config.avatar" alt="Avatar" />
-      <span class="author">{{ config.author }}</span>
-      <span class="description">
-        {{ displayedText }}<span class="cursor" v-show="cursorVisible">|</span>
-      </span>
-    </div>
-    <div class="personal-back">
-      <span class="back-description">{{ config.backDescription }}</span>
-      <div class="socials">
-        <a
-          class="social-link"
-          v-for="social in config.socials"
-          :key="social.name"
-          :href="social.url"
-          :title="social.name"
-          target="_blank"
-        >
-          <Icon
-            class="icon-iconify"
-            v-if="social.icon"
-            :icon="social.icon"
-            width="24"
-            height="24"
-          />
-          <span
-            class="icon-html"
-            v-else-if="social.iconHtml"
-            v-html="social.iconHtml"
-          ></span>
-        </a>
+  <div class="personal">
+    <div class="personal-content card">
+      <div class="personal-front">
+        <img class="avatar" :src="config.avatar" alt="Avatar" />
+        <span class="author">{{ config.author }}</span>
+        <span class="description">
+          {{ displayedText }}<span class="cursor" v-show="cursorVisible">|</span>
+        </span>
+      </div>
+      <div class="personal-back">
+        <span class="back-description">{{ config.backDescription }}</span>
+        <div class="socials">
+          <a
+            class="social-link"
+            v-for="social in config.socials"
+            :key="social.name"
+            :href="social.url"
+            :title="social.name"
+            target="_blank"
+          >
+            <Icon
+              class="icon-iconify"
+              v-if="social.icon"
+              :icon="social.icon"
+              width="24"
+              height="24"
+            />
+            <span
+              class="icon-html"
+              v-else-if="social.iconHtml"
+              v-html="social.iconHtml"
+            ></span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.personal {
+.personal-content {
   width: 250px;
   height: 120px;
   transition: 1s transform, 0.3s color, 0.3s background-color;
@@ -107,13 +109,13 @@ onUnmounted(() => {
 }
 
 @media screen and (max-width: 500px) {
-  .personal {
+  .personal-content {
     width: calc(100vw - 70px);
     height: 100px;
   }
 }
 @media screen and (max-width: 320px) {
-  .personal {
+  .personal-content {
     height: 150px;
   }
   .avatar {
@@ -129,7 +131,7 @@ onUnmounted(() => {
     font-size: 24px !important;
   }
 }
-.personal:hover {
+.personal:hover .personal-content {
   transform: rotateY(180deg);
 }
 .personal-front,
