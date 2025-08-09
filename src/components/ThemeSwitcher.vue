@@ -43,7 +43,7 @@ function switchBackground() {
     />
   </button>
   <button class="theme-switcher switchBackground" @click="switchBackground">
-    <Icon icon="line-md:image" width="24" height="24" />
+    <Icon icon="gg:image" width="24" height="24" />
   </button>
 </template>
 

@@ -105,7 +105,6 @@ onUnmounted(() => {
   transition: 1s transform, 0.3s color, 0.3s background-color;
   transform-style: preserve-3d;
   position: relative;
-  perspective: 1000px;
 }
 
 @media screen and (max-width: 500px) {
@@ -130,6 +129,9 @@ onUnmounted(() => {
   .author {
     font-size: 24px !important;
   }
+}
+.personal{
+  perspective: 1000px;
 }
 .personal:hover .personal-content {
   transform: rotateY(180deg);
