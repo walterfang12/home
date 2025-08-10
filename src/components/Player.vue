@@ -46,10 +46,61 @@ const progressPercent = computed(() => {
     return 0;
   return Math.min(100, Math.max(0, (progress.value / duration.value) * 100));
 });
+type LrcLine = {
+  time: number;
+  text: string;
+};
 const volumePercent = computed(() => volume.value * 100);
 const playerContainerRef = ref<HTMLElement | null>(null);
 const buttonRef = ref<HTMLElement | null>(null);
+const currentLyricIndex = ref(0);
+const allLyrics = ref<LrcLine[]>([]);
+const visibleLyrics = ref<LrcLine[]>([]);
 
+const parseLRC = (lrc: string) => {
+  return lrc
+    .split("\n")
+    .map((line) => {
+      const match = line.match(/\[(\d+):(\d+(?:\.\d+)?)\](.*)/);
+      if (match) {
+        const time = parseInt(match[1]) * 60 + parseFloat(match[2]);
+        const text = match[3].trim();
+        if (text === "") return null;
+        return { time, text };
+      }
+      return null;
+    })
+    .filter((l): l is { time: number; text: string } => !!l);
+};
+
+const loadLyricsForCurrentSong = async () => {
+  const song = playlist.value[currentIndex.value];
+  if (song?.lrc) {
+    allLyrics.value = parseLRC(await (await fetch(song.lrc)).text());
+    currentLyricIndex.value = 0;
+  } else {
+    allLyrics.value = [];
+  }
+};
+
+function updateLyric() {
+  if (!audioRef.value) return;
+  let time = audioRef.value.currentTime;
+  const idx = allLyrics.value.findIndex(
+    (line, i) =>
+      time >= line.time &&
+      (i === allLyrics.value.length - 1 || time < allLyrics.value[i + 1].time)
+  );
+  console.log(idx);
+
+  if (idx !== -1 && idx !== currentLyricIndex.value) {
+    currentLyricIndex.value = idx;
+    visibleLyrics.value = [
+      allLyrics.value[idx],
+      allLyrics.value[idx + 1] || { text: "", time: 0 },
+    ];
+  }
+}
 const onClickOutside = (event: MouseEvent) => {
   // 如果播放器是关闭的，不用处理
   if (!isOpen.value) return;
@@ -87,11 +138,11 @@ const playCurrent = () => {
     currentIndex.value = 0;
     currentName.value = playlist.value[0]?.name || null;
   }
-
   audioRef.value.src = playlist.value[currentIndex.value].url;
   audioRef.value.currentTime = 0;
   progress.value = 0;
   audioRef.value.play();
+  loadLyricsForCurrentSong();
   saveState();
 };
 
@@ -232,10 +283,10 @@ watch(currentIndex, async (newIndex) => {
   }
 });
 
-const gotoCurrentSong = () => {
+const gotoCurrentSong = (_: any, behavior: "auto" | "smooth" = "smooth") => {
   const el = trackRefs.value[currentIndex.value];
   if (el) {
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.scrollIntoView({ behavior: behavior, block: "center" });
   }
 };
 
@@ -249,6 +300,14 @@ const updateMarqueeStatus = () => {
   artistTooLong.value = checkOverflow(artistRef.value);
 };
 
+watch(isOpen, async () => {
+  if (isOpen.value) {
+    await nextTick();
+    updateMarqueeStatus();
+    gotoCurrentSong("", "auto");
+  }
+});
+
 onMounted(async () => {
   const res = await fetch(metingApi);
   playlist.value = await res.json();
@@ -258,7 +317,7 @@ onMounted(async () => {
   if (!currentName.value && playlist.value.length) {
     currentName.value = playlist.value[0].name;
   }
-
+  loadLyricsForCurrentSong();
   if (audioRef.value) {
     audioRef.value.volume = volume.value;
   }
@@ -286,18 +345,42 @@ onMounted(async () => {
       }
     };
   }
+  loadLyricsForCurrentSong();
   nextTick(() => {
     updateMarqueeStatus();
     nextTick(() => updateMarqueeStatus());
   });
 });
 watch([() => playlist.value, currentIndex], () => {
-  nextTick(updateMarqueeStatus);
+  nextTick(() => {
+    updateMarqueeStatus();
+    nextTick(() => updateMarqueeStatus());
+  });
 });
 window.addEventListener("resize", updateMarqueeStatus);
 </script>
 
 <template>
+ <div v-show="isPlaying" class="lyric-wrapper" ref="lyricWrapper" style="height: 48px; overflow: hidden;">
+    <div
+      class="lyric-list"
+      :style="{
+        transform: `translateY(-${currentLyricIndex * 24}px)`,
+        transition: 'transform 0.4s ease-in-out'
+      }"
+    >
+      <div
+        v-for="(line, index) in allLyrics"
+        :key="line.time"
+        class="lyric-line"
+        :class="{ current: index === currentLyricIndex }"
+        style="height: 24px; line-height: 24px;"
+      >
+        {{ line.text }}
+      </div>
+    </div>
+  </div>
+
   <button
     class="player-button"
     @click="togglePlayer"
@@ -464,7 +547,12 @@ window.addEventListener("resize", updateMarqueeStatus);
     @play="onPlay"
     @pause="onPause"
     @ended="nextTrack"
-    @timeupdate="updateProgress"
+    @timeupdate="
+      () => {
+        updateProgress();
+        updateLyric();
+      }
+    "
   ></audio>
 </template>
 
@@ -709,6 +797,64 @@ window.addEventListener("resize", updateMarqueeStatus);
 .player-slide-leave-active {
   transition: all 0.3s ease;
 }
+.lyric-wrapper {
+  overflow: hidden;
+  height: 48px;
+  left: 10px;
+  top: 10px;
+  max-width: min(350px,calc(100% - 20px));
+  position: fixed;
+  /* position: relative; */
+}
+
+.lyric-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.lyric-line {
+  height: 24px;
+  line-height: 24px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow:hidden;
+  opacity: 0.6;
+  color: var(--font-color);
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.lyric-line.current {
+  opacity: 1;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 新句子从下滑入 */
+.lyric-slide-enter-from {
+  opacity: 0;
+  transform: translateY(100%);
+}
+.lyric-slide-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 旧句子向上滑出 */
+.lyric-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+.lyric-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.lyric-slide-enter-active,
+.lyric-slide-leave-active {
+  transition: all 0.4s ease;
+}
+
 @media screen and (max-width: 500px) {
   .player-button {
     width: 30px;

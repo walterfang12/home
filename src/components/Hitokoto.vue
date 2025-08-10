@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue';
-import { ref } from 'vue';
+import { Icon } from "@iconify/vue";
+import { ref } from "vue";
 
-const hitokoto = ref('获取一言中...');
+const hitokoto = ref("获取一言中...");
 const loading = ref(false);
 
 const fetchHitokoto = async () => {
   if (loading.value) return; // 防止重复点击
   loading.value = true;
   try {
-    const response = await fetch('https://v1.hitokoto.cn');
+    const response = await fetch("https://v1.hitokoto.cn");
     const data = await response.json();
 
     if (data.from && data.from_who) {
@@ -20,7 +20,7 @@ const fetchHitokoto = async () => {
       hitokoto.value = `「${data.hitokoto}」\n——《${data.from}》`;
     }
   } catch {
-    hitokoto.value = '获取一言失败';
+    hitokoto.value = "获取一言失败";
   } finally {
     loading.value = false;
   }
@@ -55,7 +55,7 @@ fetchHitokoto();
   width: 475px;
   box-sizing: border-box;
   padding: 8px 20px;
-  transition: 0.3s;
+  transition: color 0.3s, background-color 0.3s;
   display: flex;
   flex-direction: column;
   align-items: center;

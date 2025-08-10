@@ -1,5 +1,5 @@
 // cursor.js
-export default class CustomCursor {
+export default class Cursor {
   constructor() {
     this.cursor = document.createElement("div");
     this.cursor.id = "cursor";

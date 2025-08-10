@@ -11,7 +11,9 @@ import Player from "./components/Player.vue";
 //@ts-ignore
 import Cursor from "./thirdparty/cursor.js";
 onMounted(() => {
-  new Cursor();
+  if (!(/Mobi|Android|iPhone/i.test(navigator.userAgent))) {
+    new Cursor();
+  }
 })
 </script>
 

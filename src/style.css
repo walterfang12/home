@@ -83,6 +83,15 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
 }
+[theme="light"]::-webkit-scrollbar {
+  background-color:#d8d8d8;
+}
+[theme="dark"]::-webkit-scrollbar {
+  background-color:rgb(101, 101, 101);
+}
+[theme="dark"]::-webkit-scrollbar-thumb {
+  background-color:rgb(160, 160, 160);
+}
 
 *::-webkit-scrollbar-corner {
   background-color: transparent;
