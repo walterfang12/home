@@ -332,7 +332,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  transition: transform 1s,color .3s,background-color .3s;
+  transition: transform 1s, color 0.3s, background-color 0.3s;
   transform-style: preserve-3d;
   position: relative;
 }
@@ -375,6 +375,7 @@ onMounted(() => {
 .weather-text {
   line-height: 22px;
   margin-left: 5px;
+  margin-right: 10px;
 }
 .time {
   font-size: 30px;
@@ -404,6 +405,7 @@ onMounted(() => {
   align-items: center;
   padding: 0;
   transition: 0.3s;
+  display: none;
 }
 .refresh-btn:hover:not(:disabled) {
   color: var(--font-color-hover);
