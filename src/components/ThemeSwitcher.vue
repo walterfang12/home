@@ -7,6 +7,7 @@ import Background from "./Background.vue"; // 引入背景组件
 const theme = ref("light");
 const themeStore = useCounterStore();
 const backgroundRef = ref<InstanceType<typeof Background> | null>(null);
+const isSwitching = ref(false);
 
 onMounted(() => {
   theme.value =
@@ -19,15 +20,25 @@ onMounted(() => {
 });
 
 function toggleTheme() {
+  if(isSwitching.value) return;
+  isSwitching.value = true;
   theme.value = theme.value === "dark" ? "light" : "dark";
   themeStore.setTheme(theme.value);
   document.body.setAttribute("theme", theme.value);
   localStorage.setItem("theme", theme.value);
+  setTimeout(() => {
+    isSwitching.value = false;
+  }, 1000);
 }
 
 // 手动切换背景
 function switchBackground() {
+  if(isSwitching.value) return;
+  isSwitching.value = true;
   backgroundRef.value?.updateBackground();
+  setTimeout(() => {
+    isSwitching.value = false;
+  }, 1000);
 }
 </script>
 

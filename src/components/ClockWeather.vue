@@ -332,7 +332,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  transition: transform 1s;
+  transition: transform 1s,color .3s,background-color .3s;
   transform-style: preserve-3d;
   position: relative;
 }
