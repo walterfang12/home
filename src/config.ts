@@ -68,6 +68,7 @@ export const config:Config = {
         "https://img.0v0.my/backgrounds/l7.webp",
         "https://img.0v0.my/backgrounds/l8.webp",
         "https://img.0v0.my/backgrounds/l9.webp",
+        "https://img.0v0.my/backgrounds/l10.webp",
     ],
     darkBackgrounds: [
         "https://img.0v0.my/backgrounds/d1.webp",
