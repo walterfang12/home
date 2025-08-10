@@ -39,7 +39,7 @@ const circumference = 2 * Math.PI * radius;
 const trackRefs = ref<HTMLElement[]>([]);
 
 const playlistId = config.playlistIdWyy;
-const metingApi = `https://v.iarc.top/meting/?type=playlist&id=${playlistId}`;
+const metingApi = `https://meting.qjqq.cn/?type=playlist&id=${playlistId}`;
 
 const progressPercent = computed(() => {
   if (!duration.value || !isFinite(duration.value) || duration.value === 0)
@@ -933,5 +933,8 @@ window.addEventListener("resize", updateMarqueeStatus);
 }
 [theme="dark"] .player-musicselect::-webkit-scrollbar-thumb {
   background-color: var(--font-color);
+}
+.player-pic{
+  min-width:90px;
 }
 </style>
