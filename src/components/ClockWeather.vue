@@ -60,10 +60,10 @@ function yearProgress() {
   return { passed: passedDays, total: totalDays, passedMs, totalMs };
 }
 
-// 新增：计算本周进度，默认周日为周首日
+// 新增：计算本周进度
 function weekProgress() {
   const now = new Date();
-  const dayOfWeek = now.getDay(); // 0-6，周日为0
+  const dayOfWeek = (now.getDay()+1)%7; // 周一是第一天
   const start = new Date(now);
   start.setDate(now.getDate() - dayOfWeek);
   start.setHours(0, 0, 0, 0);
