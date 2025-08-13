@@ -24,7 +24,7 @@ const PMToCH = {
 };
 const isOpen = ref(false);
 const playlist = ref<any[]>([]);
-const currentName = ref<string | null>(null);
+const currentUrl = ref<string | null>(null); // 用 URL 替代 name
 const currentIndex = ref(0);
 const isPlaying = ref(false);
 const audioRef = ref<HTMLAudioElement | null>(null);
@@ -91,7 +91,6 @@ function updateLyric() {
       time >= line.time &&
       (i === allLyrics.value.length - 1 || time < allLyrics.value[i + 1].time)
   );
-  console.log(idx);
 
   if (idx !== -1 && idx !== currentLyricIndex.value) {
     currentLyricIndex.value = idx;
@@ -102,9 +101,7 @@ function updateLyric() {
   }
 }
 const onClickOutside = (event: MouseEvent) => {
-  // 如果播放器是关闭的，不用处理
   if (!isOpen.value) return;
-  // 判断点击元素是否在播放器内
   if (
     playerContainerRef.value &&
     !buttonRef.value?.contains(event.target as Node) &&
@@ -132,11 +129,11 @@ const playCurrent = () => {
   if (!playlist.value.length || !audioRef.value) return;
 
   currentIndex.value = playlist.value.findIndex(
-    (s) => s.name === currentName.value
+    (s) => s.url === currentUrl.value
   );
   if (currentIndex.value === -1) {
     currentIndex.value = 0;
-    currentName.value = playlist.value[0]?.name || null;
+    currentUrl.value = playlist.value[0]?.url || null;
   }
   audioRef.value.src = playlist.value[currentIndex.value].url;
   audioRef.value.currentTime = 0;
@@ -147,7 +144,7 @@ const playCurrent = () => {
 };
 
 const selectTrack = (index: number) => {
-  currentName.value = playlist.value[index]?.name || null;
+  currentUrl.value = playlist.value[index]?.url || null;
   playCurrent();
 };
 
@@ -206,11 +203,11 @@ const nextTrack = () => {
     while (nextIdx === currentIndex.value && playlist.value.length > 1) {
       nextIdx = Math.floor(Math.random() * playlist.value.length);
     }
-    currentName.value = playlist.value[nextIdx].name;
+    currentUrl.value = playlist.value[nextIdx].url;
     playCurrent();
   } else {
     let nextIdx = (currentIndex.value + 1) % playlist.value.length;
-    currentName.value = playlist.value[nextIdx].name;
+    currentUrl.value = playlist.value[nextIdx].url;
     playCurrent();
   }
 };
@@ -222,12 +219,12 @@ const prevTrack = () => {
     while (prevIdx === currentIndex.value && playlist.value.length > 1) {
       prevIdx = Math.floor(Math.random() * playlist.value.length);
     }
-    currentName.value = playlist.value[prevIdx].name;
+    currentUrl.value = playlist.value[prevIdx].url;
     playCurrent();
   } else {
     let prevIdx =
       (currentIndex.value - 1 + playlist.value.length) % playlist.value.length;
-    currentName.value = playlist.value[prevIdx].name;
+    currentUrl.value = playlist.value[prevIdx].url;
     playCurrent();
   }
 };
@@ -244,8 +241,8 @@ const formatTime = (sec: number) => {
 };
 
 const saveState = () => {
-  if (currentName.value)
-    localStorage.setItem("player-currentName", currentName.value);
+  if (currentUrl.value)
+    localStorage.setItem("player-currentUrl", currentUrl.value);
   localStorage.setItem("player-progress", progress.value.toString());
   localStorage.setItem("player-isPlaying", isPlaying.value.toString());
   localStorage.setItem("player-volume", volume.value.toString());
@@ -253,8 +250,8 @@ const saveState = () => {
 };
 
 const loadState = () => {
-  const savedName = localStorage.getItem("player-currentName");
-  if (savedName) currentName.value = savedName;
+  const savedUrl = localStorage.getItem("player-currentUrl");
+  if (savedUrl) currentUrl.value = savedUrl;
 
   const savedProgress = localStorage.getItem("player-progress");
   if (savedProgress) progress.value = +savedProgress;
@@ -314,8 +311,8 @@ onMounted(async () => {
 
   loadState();
 
-  if (!currentName.value && playlist.value.length) {
-    currentName.value = playlist.value[0].name;
+  if (!currentUrl.value && playlist.value.length) {
+    currentUrl.value = playlist.value[0].url;
   }
   loadLyricsForCurrentSong();
   if (audioRef.value) {
@@ -359,6 +356,7 @@ watch([() => playlist.value, currentIndex], () => {
 });
 window.addEventListener("resize", updateMarqueeStatus);
 </script>
+
 
 <template>
  <div v-show="isPlaying" class="lyric-wrapper" ref="lyricWrapper" style="height: 48px; overflow: hidden;">

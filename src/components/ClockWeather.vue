@@ -63,7 +63,7 @@ function yearProgress() {
 // 新增：计算本周进度
 function weekProgress() {
   const now = new Date();
-  const dayOfWeek = (now.getDay()+6)%7; // 周一是第一天
+  const dayOfWeek = (now.getDay() + 6) % 7; // 周一是第一天
   const start = new Date(now);
   start.setDate(now.getDate() - dayOfWeek);
   start.setHours(0, 0, 0, 0);
