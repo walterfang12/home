@@ -121,6 +121,18 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", onClickOutside);
 });
+
+watch(currentUrl, () => {
+  if ("mediaSession" in navigator && currentIndex.value !== -1) {
+    const song = playlist.value[currentIndex.value];
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.name,
+      artist: song.artist,
+      artwork: [{ src: song.pic || "", sizes: "512x512", type: "image/png" }],
+    });
+  }
+});
+
 const togglePlayer = () => {
   isOpen.value = !isOpen.value;
 };
@@ -139,6 +151,14 @@ const playCurrent = () => {
   audioRef.value.currentTime = 0;
   progress.value = 0;
   audioRef.value.play();
+  const song = playlist.value[currentIndex.value];
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.name,
+      artist: song.artist,
+      artwork: [{ src: song.pic || "", sizes: "100x100", type: "image/png" }],
+    });
+  }
   loadLyricsForCurrentSong();
   saveState();
 };
@@ -342,6 +362,28 @@ onMounted(async () => {
       }
     };
   }
+  if ("mediaSession" in navigator) {
+    const song = playlist.value[currentIndex.value];
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.name,
+      artist: song.artist,
+      album: "", // 可选
+      artwork: [{ src: song.pic || "", sizes: "100x100", type: "image/png" }],
+    });
+
+    navigator.mediaSession.setActionHandler("play", () => {
+      audioRef.value?.play();
+    });
+    navigator.mediaSession.setActionHandler("pause", () => {
+      audioRef.value?.pause();
+    });
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
+      prevTrack();
+    });
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
+      nextTrack();
+    });
+  }
   loadLyricsForCurrentSong();
   nextTick(() => {
     updateMarqueeStatus();
@@ -357,14 +399,18 @@ watch([() => playlist.value, currentIndex], () => {
 window.addEventListener("resize", updateMarqueeStatus);
 </script>
 
-
 <template>
- <div v-show="isPlaying" class="lyric-wrapper" ref="lyricWrapper" style="height: 48px; overflow: hidden;">
+  <div
+    v-show="isPlaying"
+    class="lyric-wrapper"
+    ref="lyricWrapper"
+    style="height: 48px; overflow: hidden"
+  >
     <div
       class="lyric-list"
       :style="{
         transform: `translateY(-${currentLyricIndex * 24}px)`,
-        transition: 'transform 0.4s ease-in-out'
+        transition: 'transform 0.4s ease-in-out',
       }"
     >
       <div
@@ -372,7 +418,7 @@ window.addEventListener("resize", updateMarqueeStatus);
         :key="line.time"
         class="lyric-line"
         :class="{ current: index === currentLyricIndex }"
-        style="height: 24px; line-height: 24px;"
+        style="height: 24px; line-height: 24px"
       >
         {{ line.text }}
       </div>
@@ -534,6 +580,7 @@ window.addEventListener("resize", updateMarqueeStatus);
               else trackRefs.splice(index, 1);
             }
           "
+          data-cursor-hover
         >
           {{ song.name }} - {{ song.artist }}
         </div>
@@ -800,7 +847,7 @@ window.addEventListener("resize", updateMarqueeStatus);
   height: 48px;
   left: 10px;
   top: 10px;
-  max-width: min(350px,calc(100% - 20px));
+  max-width: min(350px, calc(100% - 20px));
   position: fixed;
   /* position: relative; */
 }
@@ -815,7 +862,7 @@ window.addEventListener("resize", updateMarqueeStatus);
   line-height: 24px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  overflow:hidden;
+  overflow: hidden;
   opacity: 0.6;
   color: var(--font-color);
   font-size: 14px;
@@ -932,7 +979,7 @@ window.addEventListener("resize", updateMarqueeStatus);
 [theme="dark"] .player-musicselect::-webkit-scrollbar-thumb {
   background-color: var(--font-color);
 }
-.player-pic{
-  min-width:90px;
+.player-pic {
+  min-width: 90px;
 }
 </style>
