@@ -23,13 +23,13 @@ onMounted(() => {
   <footer class="footer" ref="footerRef">
     <span class="footer__line">
       Made with ❤️ by
-      <a href="https://github.com/lyxofficial" target="_blank">Ariasaka</a>
+      <a href="https://github.com/walterfang12" target="_blank">Walter_Fang</a>
     </span>
     <span class="footer__line">
       自豪的使用
       <a href="https://github.com/vuejs/core" target="_blank">Vue.js</a> &&
       <a href="https://github.com/vitejs/vite" target="_blank">Vite</a> ->
-      <a href="https://github.com/lyxofficial/ariahomepage" target="_blank"
+      <a href="https://github.com/walterfang12/home" target="_blank"
         >主页项目仓库</a
       >
     </span>

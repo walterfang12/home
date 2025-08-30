@@ -253,5 +253,8 @@ onUnmounted(() => {
   margin-right: 16px;
   border: 2px solid #fffa;
   transition: 0.3s;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 </style>

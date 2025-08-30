@@ -1,5 +1,3 @@
-@import url("./blueaka.css");
-
 [theme="dark"] {
   --font-color: #ffffff99;
   --font-color-hover: #d5d5d599;
@@ -25,7 +23,7 @@
 }
 
 body {
-  font-family: "Blueaka", sans-serif;
+  font-family: "Maple Mono", "JetBrains Mono", "Fira Code", "Consolas", "Monaco", monospace;
   padding: 0;
   margin: 0;
   transition: 0.3s;
